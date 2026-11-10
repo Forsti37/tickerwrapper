@@ -1,5 +1,5 @@
 /* TickerWrapper service worker – offline shell */
-const CACHE = "tw-shell-v1";
+const CACHE = "tw-shell-v2";
 const ASSETS = [
   "./",
   "./index.html",

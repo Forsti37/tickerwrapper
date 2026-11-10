@@ -31,6 +31,66 @@
     { id: "1", label: "Kommentar" },
   ];
 
+  /** Eingebettetes Demo-Spiel – Handy-Test ohne ÖFB/Ligaportal/Tampermonkey */
+  const DEMO_MATCH = {
+    demo: true,
+    oefbUrl: "https://vereine.oefb.at/LoosdorfAsk/Spielbericht/?Loosdorf-vs-Oberndorf&:s=4078161",
+    ligaportalId: "demo",
+    title: "ASK Loosdorf - SC Oberndorf (Demo)",
+    score: "0:0",
+    home: {
+      name: "ASK Loosdorf",
+      formation: "4-4-2",
+      start: [
+        { nr: "1", name: "Stefan Kranabetter", pos: "TW", on: true },
+        { nr: "4", name: "Tomas Salata", pos: "LV", on: true },
+        { nr: "5", name: "Constantin Scharner", pos: "IV", on: true },
+        { nr: "13", name: "Gabriel Kerschbaummeier", pos: "IV", on: true },
+        { nr: "14", name: "Marco Moser", pos: "RV", on: true },
+        { nr: "6", name: "Matthias Biber", pos: "LM", on: true },
+        { nr: "8", name: "Patrik Chrenko", pos: "ZM", on: true },
+        { nr: "12", name: "Valentin Rülling", pos: "ZM", on: true },
+        { nr: "7", name: "David Lechner", pos: "RM", on: true },
+        { nr: "9", name: "Daniel Rapavý", pos: "ST", on: true },
+        { nr: "11", name: "Moritz Mayr", pos: "ST", on: true },
+      ],
+      bench: [
+        { nr: "1", name: "Patrick Dallinger", pos: "", on: false },
+        { nr: "3", name: "Amir Rulani", pos: "", on: false },
+        { nr: "10", name: "Hemad Akbari", pos: "", on: false },
+        { nr: "16", name: "Paul Mayr", pos: "", on: false },
+        { nr: "17", name: "Egzon Rullani", pos: "", on: false },
+        { nr: "18", name: "Nedim Salihovic", pos: "", on: false },
+      ],
+    },
+    away: {
+      name: "SC Oberndorf",
+      formation: "4-4-2",
+      start: [
+        { nr: "1", name: "Simon Teufl", pos: "TW", on: true },
+        { nr: "7", name: "Daniel Eder", pos: "LV", on: true },
+        { nr: "8", name: "Benjamin Hayden", pos: "IV", on: true },
+        { nr: "13", name: "Dominik Hasala", pos: "IV", on: true },
+        { nr: "14", name: "Fabian Hebenstreit", pos: "RV", on: true },
+        { nr: "11", name: "Martin Glinz", pos: "LM", on: true },
+        { nr: "10", name: "Jan Kozisnik", pos: "ZM", on: true },
+        { nr: "12", name: "Jonas Biber", pos: "ZM", on: true },
+        { nr: "9", name: "Elias Schragl", pos: "RM", on: true },
+        { nr: "16", name: "David Kopatz", pos: "ST", on: true },
+        { nr: "17", name: "Julian Tanzer", pos: "ST", on: true },
+      ],
+      bench: [
+        { nr: "1", name: "Fabian Kendler", pos: "", on: false },
+        { nr: "2", name: "Julian Schagerl", pos: "", on: false },
+        { nr: "6", name: "Jonas Möser", pos: "", on: false },
+        { nr: "15", name: "Philipp Penzenauer", pos: "", on: false },
+        { nr: "18", name: "Julian Hayden", pos: "", on: false },
+        { nr: "21", name: "Blaz Udovcic", pos: "", on: false },
+      ],
+    },
+    ts: Date.now(),
+  };
+
   /** Bausteine – editierbar, keine festen Skizzen-Sätze */
   const DEFAULT_PREFS = {
     homeClub: "Loosdorf",
@@ -191,6 +251,50 @@
     return !!(window.__TW_BRIDGE__ && window.__TW_BRIDGE__.ok);
   }
 
+  async function copyText(text) {
+    const t = String(text || "");
+    if (!t) return false;
+    try {
+      await navigator.clipboard.writeText(t);
+      return true;
+    } catch {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = t;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.append(ta);
+        ta.select();
+        const ok = document.execCommand("copy");
+        ta.remove();
+        return ok;
+      } catch {
+        return false;
+      }
+    }
+  }
+
+  function loadDemoMatch() {
+    match = JSON.parse(JSON.stringify(DEMO_MATCH));
+    match.ts = Date.now();
+    queue = [];
+    persistMatch();
+    persistQueue();
+    draft = {
+      type: "7",
+      team: "home",
+      minute: "12",
+      playerOut: null,
+      playerIn: null,
+      player: null,
+      subInPos: "",
+      reshuffles: [],
+      text: "",
+      query: "",
+      pick: "player",
+    };
+  }
+
   function setStatus(msg, kind) {
     const el = $("#status");
     if (!el) return;
@@ -310,7 +414,7 @@
     queue.unshift(item);
     persistQueue();
 
-    // Bridge: push to userscript if present
+    // Optional Desktop-Bridge
     if (window.__TW_BRIDGE__?.pushQueue) {
       window.__TW_BRIDGE__.pushQueue(queue);
     }
@@ -323,8 +427,28 @@
     draft.text = "";
     draft.query = "";
     draft.pick = draft.type === "17" ? "out" : "player";
-    setStatus("In Warteschlange – Ligaportal-Tab sendet mit Bridge", "ok");
+
+    copyText(formatQueueItem(item)).then((ok) => {
+      setStatus(
+        ok
+          ? "Event gespeichert & in Zwischenablage (für Ligaportal einfügen)"
+          : "Event in Warteschlange – unten kopieren",
+        "ok"
+      );
+    });
     render();
+  }
+
+  function formatQueueItem(item) {
+    const label = EVENT_TYPES.find((t) => t.id === item.type)?.label || item.type;
+    return `${item.minute || "–"}' ${label}\n${item.text || ""}`.trim();
+  }
+
+  function formatFullQueue() {
+    return queue
+      .filter((q) => q.status === "queued" || q.status === "copied")
+      .map(formatQueueItem)
+      .join("\n\n---\n\n");
   }
 
   function importOefbPayload(data) {
@@ -380,9 +504,14 @@
   function renderBridgePill() {
     const el = $("#bridge-pill");
     if (!el) return;
+    if (match.demo) {
+      el.className = "bridge-pill on";
+      el.textContent = "Demo-Modus";
+      return;
+    }
     const on = bridgeStatus();
     el.className = "bridge-pill " + (on ? "on" : "off");
-    el.textContent = on ? "Bridge aktiv" : "Bridge aus (Userscript)";
+    el.textContent = on ? "Bridge aktiv" : "Standalone (ohne Tampermonkey)";
   }
 
   function renderMatch() {
@@ -392,6 +521,25 @@
     const panel = document.createElement("section");
     panel.className = "panel stack";
     panel.innerHTML = `<h2>Match</h2>`;
+
+    const demoBox = document.createElement("div");
+    demoBox.className = "stack";
+    const demoIntro = document.createElement("p");
+    demoIntro.className = "muted";
+    demoIntro.textContent =
+      "Handy-Test ohne echtes Spiel: Demo lädt Loosdorf–Oberndorf inkl. Bank & Positionen. Alles lokal in der App – kein Tampermonkey nötig.";
+    const demoBtn = document.createElement("button");
+    demoBtn.type = "button";
+    demoBtn.className = "primary";
+    demoBtn.textContent = match.demo ? "Demo neu laden" : "Demo-Spiel laden";
+    demoBtn.addEventListener("click", () => {
+      loadDemoMatch();
+      setStatus("Demo geladen – XI & Ticker ausprobieren", "ok");
+      tab = "lineup";
+      render();
+    });
+    demoBox.append(demoIntro, demoBtn);
+    panel.append(demoBox);
 
     const urlField = document.createElement("label");
     urlField.className = "field";
@@ -517,7 +665,7 @@
     const hint = document.createElement("p");
     hint.className = "muted";
     hint.textContent =
-      "Kein Server: ÖFB-Seite + Bridge-Userscript speichern die Aufstellung lokal. Du kannst den Link nur hinterlegen und später laden – oder gar nichts tun und manuell pasten.";
+      "Produktion am Handy: Aufstellung manuell pasten oder (am Desktop optional) Bridge. Events kopierst du in Ligaportal – die App braucht keinen Server und kein Tampermonkey.";
     panel.append(hint);
 
     root.append(panel);
@@ -918,7 +1066,7 @@
     const send = document.createElement("button");
     send.type = "button";
     send.className = "primary";
-    send.textContent = "In Warteschlange";
+    send.textContent = "Übernehmen & kopieren";
     send.addEventListener("click", () => {
       if (!draft.minute && draft.type !== "1") {
         setStatus("Minute fehlt", "err");
@@ -940,28 +1088,52 @@
 
     if (queue.length) {
       const qh = document.createElement("h2");
-      qh.textContent = `Warteschlange (${queue.length})`;
+      qh.textContent = `Protokoll (${queue.length})`;
       panel.append(qh);
       queue.slice(0, 8).forEach((item) => {
         const card = document.createElement("div");
         card.className = "queue-item";
-        card.innerHTML = `<div class="kv"><strong>${item.minute || "–"}'</strong><span>${EVENT_TYPES.find((t) => t.id === item.type)?.label || item.type}</span></div>
-          <div>${item.text || ""}</div>
-          <div class="muted">${item.status}${item.ligaportalId ? " · LP " + item.ligaportalId : ""}</div>`;
+        const head = document.createElement("div");
+        head.className = "kv";
+        head.innerHTML = `<strong>${item.minute || "–"}'</strong><span>${EVENT_TYPES.find((t) => t.id === item.type)?.label || item.type}</span>`;
+        const body = document.createElement("div");
+        body.textContent = item.text || "";
+        const meta = document.createElement("div");
+        meta.className = "muted";
+        meta.textContent = item.status + (match.demo ? " · Demo" : "");
+        const copyBtn = document.createElement("button");
+        copyBtn.type = "button";
+        copyBtn.textContent = "Kopieren";
+        copyBtn.addEventListener("click", async () => {
+          const ok = await copyText(formatQueueItem(item));
+          item.status = ok ? "copied" : item.status;
+          persistQueue();
+          setStatus(ok ? "Kopiert" : "Kopieren fehlgeschlagen", ok ? "ok" : "err");
+        });
+        card.append(head, body, meta, copyBtn);
         panel.append(card);
       });
-      const openLp = document.createElement("button");
-      openLp.type = "button";
-      openLp.textContent = "Ligaportal öffnen";
-      openLp.addEventListener("click", () => {
-        const id = match.ligaportalId;
-        if (!id) {
-          setStatus("Ligaportal-ID unter Match eintragen", "err");
-          return;
-        }
-        window.open(`https://ticker.ligaportal.at/liveGame/edit/${id}`, "_blank");
+      const qActions = document.createElement("div");
+      qActions.className = "row";
+      const copyAll = document.createElement("button");
+      copyAll.type = "button";
+      copyAll.className = "primary";
+      copyAll.textContent = "Alles kopieren";
+      copyAll.addEventListener("click", async () => {
+        const ok = await copyText(formatFullQueue());
+        setStatus(ok ? "Protokoll in Zwischenablage" : "Kopieren fehlgeschlagen", ok ? "ok" : "err");
       });
-      panel.append(openLp);
+      qActions.append(copyAll);
+      if (match.ligaportalId && match.ligaportalId !== "demo") {
+        const openLp = document.createElement("button");
+        openLp.type = "button";
+        openLp.textContent = "Ligaportal öffnen";
+        openLp.addEventListener("click", () => {
+          window.open(`https://ticker.ligaportal.at/liveGame/edit/${match.ligaportalId}`, "_blank");
+        });
+        qActions.append(openLp);
+      }
+      panel.append(qActions);
     }
 
     root.append(panel);

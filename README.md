@@ -1,54 +1,39 @@
 # TickerWrapper
 
-Matchday-App für den Ligaportal-Ticker (ASK Loosdorf): Aufstellung, Formation, Positionen, schnelle Events – **als PWA auf GitHub Pages**, nutzbar vom Homescreen und am Laptop.
+Matchday-PWA für den Ligaportal-Ticker (ASK Loosdorf): Aufstellung, Formation, Positionen, Events.
 
-Kein eigener Server. Ligaportal bleibt die Schreib-Session; eine kleine Tampermonkey-**Bridge** koppelt die drei Origins.
+**Läuft standalone auf dem Handy** (GitHub Pages → Homescreen). Kein Server, kein Tampermonkey nötig für den Normalbetrieb.
 
-## Architektur
+App: **https://forsti37.github.io/tickerwrapper/**
 
-| Teil | Rolle |
-|------|--------|
-| **PWA** (`docs/`) | UI: Match-Link, XI/Bank, Formation, Ticker-Bausteine, Warteschlange |
-| **Bridge-Userscript** | ÖFB auslesen → PWA; Queue aus PWA → Ligaportal-POST |
-| **ÖFB Vereins-Spielbericht** | öffentliche Aufstellung (kein fussballoesterreich-Login) |
+## Handy testen (ohne echtes Spiel)
 
-```
-vereine.oefb.at  --export-->  Bridge (GM)  --import-->  GitHub Pages PWA
-                                                          |
-                                                     Warteschlange
-                                                          |
-ticker.ligaportal.at  <--POST--  Bridge (Queue senden)
-```
+1. Seite auf dem Handy öffnen (Safari/Chrome)
+2. Optional: Teilen → **Zum Home-Bildschirm**
+3. **Demo-Spiel laden** → Loosdorf–Oberndorf mit XI, Bank, Positionen
+4. **XI**: Formation/Positionen anfassen
+5. **Ticker**: z.B. Tor/Wechsel → **Übernehmen & kopieren**
+
+Events landen im Protokoll und in der Zwischenablage – zum Üben reicht das. Ligaportal brauchst du dafür nicht.
+
+## Echtes Spiel (Handy)
+
+1. Aufstellung als Text pasten (oder ÖFB-Link nur als Notiz)
+2. Formation/Positionen setzen
+3. Events tippen → Text liegt in der Zwischenablage → in Ligaportal (Handy-Browser, eingeloggt) einfügen
+
+## Optional: Desktop-Bridge (Tampermonkey)
+
+Nur Komfort am Laptop: ÖFB-Export + Queue an Ligaportal-POST.  
+Script: [`userscript/tickerwrapper-bridge.user.js`](userscript/tickerwrapper-bridge.user.js)  
+Am Handy irrelevant – die PWA ist abgeschlossen ohne Bridge.
 
 ## GitHub Pages
 
-1. Repo auf GitHub pushen
-2. Settings → Pages → Source: **Deploy from a branch** → Branch `main`, Folder **`/docs`**
-3. App-URL z.B. `https://<user>.github.io/tickerwrapper/`
-4. Handy: Safari/Chrome → Teilen / Menü → **Zum Home-Bildschirm**
-
-Lokal testen: beliebigen Static-Server auf `docs/` (z.B. `npx serve docs`).
-
-## Bridge installieren
-
-1. [Tampermonkey](https://www.tampermonkey.net/)
-2. Script: [`userscript/tickerwrapper-bridge.user.js`](userscript/tickerwrapper-bridge.user.js)
-3. Falls deine Pages-URL nicht unter `*.github.io/tickerwrapper` liegt: `@match` im Script ergänzen
-
-Das ältere Overlay-Script (`tickerwrapper.user.js`) ist optional / Legacy.
-
-## Spieltag
-
-1. PWA öffnen → **Match**: ÖFB-Link + Ligaportal-Spiel-ID
-2. **ÖFB öffnen** → Button **TW: An TickerWrapper**
-3. Zurück in die PWA → **Aufstellung übernehmen** → unter **XI** Formation/Positionen setzen
-4. **Ticker**: Event tippen → Text bei Bedarf anpassen → **In Warteschlange**
-5. Ligaportal-Editor (eingeloggt) öffnen → **TW: Queue senden**
-
-Bausteine (Tor, Wechsel, …) sind unter **Bausteine** frei editierbar – kein fester Skizzen-Satz.
+Repo: https://github.com/Forsti37/tickerwrapper  
+Source: Branch `main`, Ordner `/docs`
 
 ## Hinweise
 
-- Öffentliche `vereine.oefb.at`-Spielberichte nutzen; **kein** Scraping von fussballoesterreich mit Login
-- Anubis-Botcheck auf ÖFB einmalig im Browser abwarten
-- Recherche/API-Notizen liegen unter `_research/`
+- Nur öffentliche `vereine.oefb.at`-Daten / manuelles Pasten – kein fussballoesterreich-Login-Scraping
+- Bausteine (Tor-, Wechsel-Text, …) unter **Bausteine** frei editierbar
