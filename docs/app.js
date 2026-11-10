@@ -334,12 +334,46 @@
       match.away = data.away;
       match.oefbUrl = data.oefbUrl || data.url || match.oefbUrl;
       match.title = data.title || match.title;
+      if (data.ligaportalId) match.ligaportalId = String(data.ligaportalId);
       if (!match.home.formation) applyFormation(match.home, "4-4-2");
       if (!match.away.formation) applyFormation(match.away, "4-4-2");
       persistMatch();
       return true;
     }
     return false;
+  }
+
+  /** ID oder komplette Ligaportal-URL → reine Ziffern-ID */
+  function parseLigaportalId(raw) {
+    const s = String(raw || "").trim();
+    if (!s) return "";
+    const fromUrl = s.match(/\/liveGame\/edit\/(\d+)/i) || s.match(/[?&](?:id|gameId)=(\d+)/i);
+    if (fromUrl) return fromUrl[1];
+    if (/^\d+$/.test(s)) return s;
+    const any = s.match(/(\d{5,})/);
+    return any ? any[1] : "";
+  }
+
+  function applyLigaportalSession(data) {
+    if (!data?.ligaportalId && !data?.ligaportalUrl) return false;
+    const id = String(data.ligaportalId || parseLigaportalId(data.ligaportalUrl) || "");
+    if (!id) return false;
+    match.ligaportalId = id;
+    if (data.title) match.title = data.title;
+    if (data.score) match.score = data.score;
+    if (data.home?.name && !match.home.start?.length) match.home.name = data.home.name;
+    if (data.away?.name && !match.away.start?.length) match.away.name = data.away.name;
+    // Namen auch aktualisieren wenn Startelf schon da ist
+    if (data.home?.name) match.home.name = data.home.name;
+    if (data.away?.name) match.away.name = data.away.name;
+    persistMatch();
+    return true;
+  }
+
+  function pullLigaportalFromBridge() {
+    const fromBridge = window.__TW_BRIDGE__?.pullMatch?.();
+    const fromLs = load("tw.v1.ligaportalSession", null);
+    return applyLigaportalSession(fromBridge || fromLs);
   }
 
   // —— render ——
@@ -375,17 +409,38 @@
 
     const lpField = document.createElement("label");
     lpField.className = "field";
-    lpField.textContent = "Ligaportal Spiel-ID (edit/… Nummer)";
+    lpField.textContent = "Ligaportal (ID oder Editor-Link)";
     const lpInput = document.createElement("input");
-    lpInput.inputMode = "numeric";
-    lpInput.placeholder = "z.B. 1349470";
+    lpInput.placeholder = "…/liveGame/edit/1349470  oder nur 1349470";
     lpInput.value = match.ligaportalId || "";
     lpInput.addEventListener("change", () => {
-      match.ligaportalId = lpInput.value.trim();
+      match.ligaportalId = parseLigaportalId(lpInput.value);
+      lpInput.value = match.ligaportalId;
       persistMatch();
+      setStatus(match.ligaportalId ? `Ligaportal-ID ${match.ligaportalId}` : "Keine ID erkannt", match.ligaportalId ? "ok" : "err");
     });
     lpField.append(lpInput);
-    panel.append(lpField);
+    const lpHint = document.createElement("p");
+    lpHint.className = "muted";
+    lpHint.textContent =
+      "Steckt in der URL nach edit/. Oder Ligaportal-Editor öffnen – Bridge übernimmt die ID automatisch.";
+    panel.append(lpField, lpHint);
+
+    const lpRow = document.createElement("div");
+    lpRow.className = "row";
+    const pullLp = document.createElement("button");
+    pullLp.type = "button";
+    pullLp.textContent = "ID von Bridge holen";
+    pullLp.addEventListener("click", () => {
+      if (pullLigaportalFromBridge()) {
+        setStatus(`Ligaportal-ID ${match.ligaportalId} übernommen`, "ok");
+        render();
+      } else {
+        setStatus("Noch keine Session – zuerst Ligaportal-Editor öffnen (mit Bridge)", "err");
+      }
+    });
+    lpRow.append(pullLp);
+    panel.append(lpRow);
 
     const scoreField = document.createElement("label");
     scoreField.className = "field";
@@ -999,12 +1054,19 @@
       const payload = window.__TW_BRIDGE__?.pullLineup?.();
       if (payload && !match.home?.start?.length) {
         importOefbPayload(payload);
-        render();
       }
+      if (!match.ligaportalId) pullLigaportalFromBridge();
+      render();
     });
     window.addEventListener("tw-lineup-imported", (e) => {
       if (importOefbPayload(e.detail)) {
         setStatus("ÖFB-Aufstellung empfangen", "ok");
+        render();
+      }
+    });
+    window.addEventListener("tw-ligaportal-detected", (e) => {
+      if (applyLigaportalSession(e.detail)) {
+        setStatus(`Ligaportal-ID ${match.ligaportalId} erkannt`, "ok");
         render();
       }
     });

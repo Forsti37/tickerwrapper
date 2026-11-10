@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TickerWrapper Bridge
 // @namespace    https://github.com/local/tickerwrapper
-// @version      1.0.0
+// @version      1.1.0
 // @description  Verbindet GitHub-Pages-PWA ↔ ÖFB-Spielbericht ↔ Ligaportal (ohne eigenen Server)
 // @author       local
 // @match        https://ticker.ligaportal.at/liveGame/edit/*
@@ -207,15 +207,20 @@
     function pushToPage() {
       const lineup = gmGet(KEY_LINEUP, null);
       const queue = gmGet(KEY_QUEUE, []);
+      const bridgeMatch = gmGet(KEY_MATCH, null);
       try {
         if (lineup) localStorage.setItem("tw.v1.oefbImport", JSON.stringify(lineup));
         if (queue) localStorage.setItem("tw.v1.queue", JSON.stringify(queue));
+        if (bridgeMatch?.ligaportalId) {
+          localStorage.setItem("tw.v1.ligaportalSession", JSON.stringify(bridgeMatch));
+        }
       } catch {
         /* ignore */
       }
       window.__TW_BRIDGE__ = {
         ok: true,
         pullLineup: () => gmGet(KEY_LINEUP, null),
+        pullMatch: () => gmGet(KEY_MATCH, null),
         pushQueue: (q) => gmSet(KEY_QUEUE, q),
         pullQueue: () => gmGet(KEY_QUEUE, []),
       };
@@ -223,20 +228,43 @@
       if (lineup) {
         window.dispatchEvent(new CustomEvent("tw-lineup-imported", { detail: lineup }));
       }
+      if (bridgeMatch?.ligaportalId) {
+        window.dispatchEvent(new CustomEvent("tw-ligaportal-detected", { detail: bridgeMatch }));
+      }
     }
 
     pushToPage();
     try {
       GM_addValueChangeListener(KEY_LINEUP, () => pushToPage());
       GM_addValueChangeListener(KEY_QUEUE, () => pushToPage());
+      GM_addValueChangeListener(KEY_MATCH, () => pushToPage());
     } catch {
       /* older TM */
+    }
+
+    function mergeMatchFromPage(pageMatch) {
+      if (!pageMatch) return;
+      const prev = gmGet(KEY_MATCH, {}) || {};
+      const homeHasXi = (pageMatch.home?.start || []).some((p) => p?.name);
+      const prevHomeXi = (prev.home?.start || []).some((p) => p?.name);
+      gmSet(KEY_MATCH, {
+        ...prev,
+        ...pageMatch,
+        ligaportalId: pageMatch.ligaportalId || prev.ligaportalId || "",
+        ligaportalUrl: pageMatch.ligaportalUrl || prev.ligaportalUrl || "",
+        home: homeHasXi ? pageMatch.home : prev.home || pageMatch.home,
+        away: (pageMatch.away?.start || []).some((p) => p?.name)
+          ? pageMatch.away
+          : prev.away || pageMatch.away,
+        // falls PWA noch keine XI hat, ÖFB/LP-Daten behalten
+        ...(homeHasXi || !prevHomeXi ? {} : { home: prev.home, away: prev.away }),
+      });
     }
 
     // Page → GM when PWA writes queue
     window.addEventListener("tw-storage", (e) => {
       if (e.detail?.key === "tw.v1.queue") gmSet(KEY_QUEUE, e.detail.value);
-      if (e.detail?.key === "tw.v1.match") gmSet(KEY_MATCH, e.detail.value);
+      if (e.detail?.key === "tw.v1.match") mergeMatchFromPage(e.detail.value);
     });
 
     // Also poll localStorage queue written by app
@@ -246,7 +274,7 @@
         const prev = gmGet(KEY_QUEUE, []);
         if (JSON.stringify(q) !== JSON.stringify(prev)) gmSet(KEY_QUEUE, q);
         const m = JSON.parse(localStorage.getItem("tw.v1.match") || "null");
-        if (m) gmSet(KEY_MATCH, m);
+        mergeMatchFromPage(m);
       } catch {
         /* ignore */
       }
@@ -366,7 +394,38 @@
     return sent;
   }
 
+  function publishLigaportalSession() {
+    const gameId = parseGameId();
+    if (!gameId) return;
+    const title = qs("h1")?.textContent?.trim() || document.title || "";
+    const scoreLink = qsa("a").find((a) => /^\d+:\d+$/.test(a.textContent.trim()));
+    const score = scoreLink?.textContent.trim() || "";
+    const parts = title.split(/\s+-\s+/);
+    const prev = gmGet(KEY_MATCH, {}) || {};
+    const next = {
+      ...prev,
+      ligaportalId: String(gameId),
+      ligaportalUrl: location.href,
+      title: title || prev.title || "",
+      score: score || prev.score || "0:0",
+      home: prev.home || { name: (parts[0] || "").trim(), formation: "4-4-2", start: [], bench: [] },
+      away: prev.away || { name: (parts[1] || "").trim(), formation: "4-4-2", start: [], bench: [] },
+      ts: Date.now(),
+      source: "ligaportal",
+    };
+    // Teamnamen aus H1 übernehmen, wenn noch leer / Default
+    if (parts[0] && (!next.home.name || next.home.name === "Loosdorf" || next.source === "ligaportal")) {
+      next.home = { ...next.home, name: parts[0].trim() };
+    }
+    if (parts[1]) next.away = { ...next.away, name: parts[1].trim() };
+    gmSet(KEY_MATCH, next);
+    return next;
+  }
+
+  publishLigaportalSession();
+
   const btn = fab("TW: Queue senden", async () => {
+    publishLigaportalSession();
     btn.textContent = "Sende…";
     const n = await flushQueue();
     btn.textContent = n ? `${n} gesendet – reload` : "Nichts in Queue";
@@ -380,10 +439,4 @@
       }, 1800);
     }
   });
-
-  // Sync match meta from PWA if present
-  const matchMeta = gmGet(KEY_MATCH, null);
-  if (matchMeta?.ligaportalId && String(matchMeta.ligaportalId) !== parseGameId()) {
-    /* user may have wrong tab – ignore */
-  }
 })();
