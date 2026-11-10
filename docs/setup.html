@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b1f14" />
+    <title>TickerWrapper – Auto-Ticker Setup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700&family=Figtree:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css?v=4" />
+    <style>
+      .steps {
+        counter-reset: step;
+        display: grid;
+        gap: 12px;
+      }
+      .step {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px;
+        background: var(--card);
+      }
+      .step::before {
+        counter-increment: step;
+        content: "Schritt " counter(step);
+        display: block;
+        font-family: var(--font-display);
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 6px;
+        letter-spacing: 0.04em;
+      }
+      .bookmark {
+        display: block;
+        text-align: center;
+        background: var(--accent);
+        color: var(--accent-ink);
+        font-weight: 800;
+        border-radius: 999px;
+        padding: 16px;
+        text-decoration: none;
+        margin: 10px 0;
+        font-size: 1.05rem;
+      }
+      code,
+      .mono {
+        font-family: ui-monospace, monospace;
+        font-size: 0.85rem;
+        word-break: break-all;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="eyebrow">TickerWrapper</div>
+      <h1>Automatisch tickern</h1>
+      <p>
+        Ligaportal speichert nur mit Login-Session. Deshalb läuft der Ticker
+        <strong>direkt auf der Ligaportal-Seite</strong> – Speichern = sofort im
+        Portal, ohne Kopieren, ohne Tampermonkey.
+      </p>
+    </header>
+
+    <section class="panel stack">
+      <h2>Einmalig: Bookmark am Handy</h2>
+      <div class="steps">
+        <div class="step">
+          <p>Diesen Link <strong>lange drücken</strong> → „Lesezeichen“ / „Bookmark“ (Name: <strong>TW</strong>).</p>
+          <a
+            class="bookmark"
+            id="bm"
+            href="javascript:void(0)"
+            >★ TW starten</a
+          >
+          <p class="muted">
+            iPhone: oft zuerst irgendeine Seite als Bookmark speichern, dann
+            Bookmark bearbeiten und die Adresse durch den Code unten ersetzen.
+          </p>
+        </div>
+        <div class="step">
+          <p>In Safari/Chrome bei Ligaportal einloggen.</p>
+        </div>
+        <div class="step">
+          <p>
+            Live-Editor öffnen – zum Testen ohne echtes Spiel das
+            <strong>Demospiel</strong>:
+          </p>
+          <p>
+            <a
+              href="https://ticker.ligaportal.at/liveGame/edit/1349470"
+              style="color: var(--accent); font-weight: 700"
+              >ticker.ligaportal.at/liveGame/edit/1349470</a
+            >
+          </p>
+          <p class="muted">Oder über Ligaportal-Menü „Demo“ / Demospiel.</p>
+        </div>
+        <div class="step">
+          <p>Lesezeichen <strong>TW</strong> antippen → Overlay erscheint.</p>
+          <p>Event tippen → <strong>In Ligaportal speichern</strong> → landet automatisch im Ticker.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel stack">
+      <h2>Bookmark-Adresse (zum Einfügen)</h2>
+      <p class="muted">Falls „★ TW starten“ nicht speicherbar ist – Text kopieren und als Bookmark-URL setzen:</p>
+      <textarea id="bmcode" readonly rows="6" class="mono"></textarea>
+      <button type="button" class="primary" id="copy">Code kopieren</button>
+    </section>
+
+    <p class="muted">
+      <a href="./" style="color: var(--accent)">Zur Planungs-App</a> (XI/Formation offline) –
+      Tickern selbst immer über Ligaportal + TW-Bookmark.
+    </p>
+
+    <script>
+      (function () {
+        var src =
+          "https://forsti37.github.io/tickerwrapper/overlay.js?t=" + Date.now();
+        var code =
+          "javascript:(function(){if(!/ligaportal\\.at/i.test(location.host)){alert('Zuerst Ligaportal Live-Editor öffnen');return;}var s=document.createElement('script');s.src='https://forsti37.github.io/tickerwrapper/overlay.js?t='+Date.now();document.documentElement.appendChild(s);})();";
+        document.getElementById("bm").setAttribute("href", code);
+        document.getElementById("bmcode").value = code;
+        document.getElementById("copy").onclick = async function () {
+          try {
+            await navigator.clipboard.writeText(code);
+            this.textContent = "Kopiert";
+          } catch (e) {
+            document.getElementById("bmcode").select();
+          }
+        };
+      })();
+    </script>
+  </body>
+</html>

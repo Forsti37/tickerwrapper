@@ -1,9 +1,11 @@
 /* TickerWrapper service worker – offline shell */
-const CACHE = "tw-shell-v3";
+const CACHE = "tw-shell-v4";
 const ASSETS = [
   "./",
   "./index.html",
-  "./styles.css?v=3",
+  "./setup.html",
+  "./overlay.js",
+  "./styles.css?v=4",
   "./app.js?v=3",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
