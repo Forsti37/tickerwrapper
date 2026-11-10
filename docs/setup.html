@@ -40,7 +40,19 @@
         font-weight: 600;
         line-height: 1.35;
       }
-      .bookmark {
+      .okbox {
+        border: 1px solid rgba(184, 242, 110, 0.35);
+        background: rgba(184, 242, 110, 0.08);
+        border-radius: 14px;
+        padding: 12px 14px;
+        line-height: 1.4;
+      }
+      .mono {
+        font-family: ui-monospace, monospace;
+        font-size: 0.72rem;
+        word-break: break-all;
+      }
+      a.big {
         display: block;
         text-align: center;
         background: var(--accent);
@@ -49,105 +61,118 @@
         border-radius: 999px;
         padding: 16px;
         text-decoration: none;
-        margin: 10px 0;
+        margin: 8px 0;
       }
-      .mono {
-        font-family: ui-monospace, monospace;
-        font-size: 0.8rem;
-        word-break: break-all;
+      a.big.secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text);
+        border: 1px solid var(--line);
       }
     </style>
   </head>
   <body>
     <header class="app-header">
       <div class="eyebrow">TickerWrapper</div>
-      <h1>Auto-Ticker einrichten</h1>
+      <h1>Auto-Ticker am Handy</h1>
+      <p class="muted">
+        Chrome blockiert Lesezeichen mit <code>javascript:</code> (darum
+        <code>about:blank#blocked</code>). Deshalb nicht „Link lange drücken“.
+      </p>
     </header>
 
     <p class="warn">
-      Die Meldung „Zuerst Ligaportal Live-Editor öffnen“ heißt: Du hast TW
-      <em>hier</em> oder auf einer anderen Seite getippt. TW muss auf der
-      <strong>Ligaportal-Editor-Seite</strong> laufen – nicht auf github.io.
+      Empfohlen unter Android: <strong>Firefox</strong> + Tampermonkey – einmal
+      installieren, danach öffnet sich TW automatisch im Ligaportal-Editor.
     </p>
 
     <section class="panel stack">
-      <h2>Einmalig: Lesezeichen anlegen</h2>
+      <h2>Variante A – Firefox (einfach)</h2>
       <div class="steps">
+        <div class="step">
+          <p>Firefox für Android installieren (Play Store).</p>
+        </div>
         <div class="step">
           <p>
-            Button unten <strong>lange drücken</strong> → „Lesezeichen“ /
-            „Bookmark“ → Name <strong>TW</strong>.
-          </p>
-          <p class="muted">
-            Nicht erwarten, dass der Button hier das Overlay öffnet – er ist nur
-            zum Speichern als Lesezeichen.
-          </p>
-          <a class="bookmark" id="bm" href="#">★ Als Lesezeichen „TW“ speichern</a>
-          <p class="muted">
-            iPhone-Trick: Beliebige Seite als Lesezeichen speichern → Lesezeichen
-            bearbeiten → Name „TW“, Adresse durch den Code unten ersetzen.
+            In Firefox: Add-ons → nach <strong>Tampermonkey</strong> suchen →
+            installieren.
           </p>
         </div>
-      </div>
-    </section>
-
-    <section class="panel stack">
-      <h2>Jedes Mal tickern</h2>
-      <div class="steps">
         <div class="step">
-          <p>Ligaportal im <strong>Browser</strong> öffnen und einloggen (nicht die Ligaportal-App).</p>
-        </div>
-        <div class="step">
-          <p>Editor öffnen. Test ohne echtes Spiel:</p>
+          <p>Dieses Userscript installieren (in Firefox tippen):</p>
           <a
-            class="bookmark"
-            href="https://ticker.ligaportal.at/liveGame/edit/1349470"
-            style="background: #fff; color: #0b1f14"
+            class="big"
+            href="https://forsti37.github.io/tickerwrapper/tickerwrapper-overlay.user.js"
+            >Userscript installieren</a
+          >
+          <p class="muted">Tampermonkey fragt „Installieren?“ → bestätigen.</p>
+        </div>
+        <div class="step">
+          <p>In Firefox Ligaportal öffnen, einloggen, Demospiel:</p>
+          <a class="big secondary" href="https://ticker.ligaportal.at/liveGame/edit/1349470"
             >Demospiel-Editor öffnen</a
           >
-          <p class="muted">Adresse muss so aussehen: …/liveGame/edit/1349470</p>
-        </div>
-        <div class="step">
-          <p>
-            Jetzt – <strong>während du auf dieser Ligaportal-Seite bist</strong> –
-            in der Bookmark-Leiste / Lesezeichen <strong>TW</strong> tippen.
-          </p>
-          <p>Overlay unten → Event → <strong>In Ligaportal speichern</strong>.</p>
+          <p>Unten rechts erscheint <strong>TW</strong> → Overlay → speichern = direkt im Portal.</p>
         </div>
       </div>
     </section>
 
     <section class="panel stack">
-      <h2>Bookmark-Code (falls nötig)</h2>
-      <textarea id="bmcode" class="mono" readonly rows="7"></textarea>
-      <button type="button" class="primary" id="copy">Code kopieren</button>
+      <h2>Variante B – Chrome (umständlich)</h2>
+      <div class="okbox">
+        Lange drücken geht in Chrome <strong>nicht</strong>. Du musst ein normales
+        Lesezeichen anlegen und die <strong>Adresse per Hand ersetzen</strong>.
+      </div>
+      <div class="steps">
+        <div class="step">
+          <p>Unten <strong>Code kopieren</strong> tippen.</p>
+          <button type="button" class="primary" id="copy">Code kopieren</button>
+        </div>
+        <div class="step">
+          <p>
+            Beliebige Seite als Lesezeichen speichern (Stern / Menü →
+            Lesezeichen).
+          </p>
+        </div>
+        <div class="step">
+          <p>
+            Chrome-Menü (⋮) → <strong>Lesezeichen</strong> → Lesezeichen
+            antippen / bearbeiten (Stift) → Feld <strong>URL / Adresse</strong>
+            komplett löschen → kopierten Code <strong>einfügen</strong> → Name
+            <strong>TW</strong> → Speichern.
+          </p>
+        </div>
+        <div class="step">
+          <p>
+            Ligaportal-Editor öffnen (Demospiel-Link oben), dann Lesezeichen
+            <strong>TW</strong> aus dem Lesezeichen-Menü öffnen.
+          </p>
+        </div>
+      </div>
+      <textarea id="bmcode" class="mono" readonly rows="8"></textarea>
     </section>
 
+    <p class="muted">
+      Die Ligaportal-<strong>App</strong> kann das nicht – nur Browser (Firefox
+      empfohlen).
+    </p>
     <p id="status" class="status" aria-live="polite"></p>
 
     <script>
       (function () {
         var code =
-          "javascript:(function(){var h=location.hostname||'';if(!/ligaportal\\.at$/i.test(h)){alert('TW nur im Ligaportal-Editor.\\n\\nJetzt: Demospiel öffnen:\\nhttps://ticker.ligaportal.at/liveGame/edit/1349470\\n\\nDann dort das Lesezeichen TW tippen.\\n\\n(Aktuell: '+h+')');return;}if(!/\\/liveGame\\/edit\\/\\d+/i.test(location.pathname||'')){alert('Du bist auf Ligaportal, aber nicht im Live-Editor.\\nÖffne ein Spiel unter …/liveGame/edit/…');return;}var s=document.createElement('script');s.src='https://forsti37.github.io/tickerwrapper/overlay.js?t='+Date.now();document.documentElement.appendChild(s);})();";
-
-        var bm = document.getElementById("bm");
-        bm.setAttribute("href", code);
-        bm.addEventListener("click", function (e) {
-          // Auf der Setup-Seite: nicht das Bookmarklet „echt“ ausführen – würde nur alerten
-          e.preventDefault();
-          var st = document.getElementById("status");
-          st.className = "status err";
-          st.textContent =
-            "Hier nicht tippen zum Starten. Lange drücken → Lesezeichen. Danach Demospiel öffnen und dort TW tippen.";
-        });
-
+          "javascript:(function(){var h=location.hostname||'';if(!/ligaportal\\.at$/i.test(h)){alert('TW nur im Ligaportal-Editor.\\nZuerst:\\nhttps://ticker.ligaportal.at/liveGame/edit/1349470\\nDann Lesezeichen TW öffnen.');return;}if(!/\\/liveGame\\/edit\\/\\d+/i.test(location.pathname||'')){alert('Nicht im Live-Editor. Öffne …/liveGame/edit/…');return;}var s=document.createElement('script');s.src='https://forsti37.github.io/tickerwrapper/overlay.js?t='+Date.now();document.documentElement.appendChild(s);})();";
         document.getElementById("bmcode").value = code;
         document.getElementById("copy").onclick = async function () {
+          var st = document.getElementById("status");
           try {
             await navigator.clipboard.writeText(code);
-            this.textContent = "Kopiert";
-          } catch (err) {
+            st.className = "status ok";
+            st.textContent = "Code kopiert – jetzt Lesezeichen-URL damit ersetzen.";
+            this.textContent = "Kopiert ✓";
+          } catch (e) {
             document.getElementById("bmcode").select();
+            st.className = "status err";
+            st.textContent = "Bitte Code markieren und selbst kopieren.";
           }
         };
       })();

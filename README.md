@@ -7,11 +7,12 @@ Handy-Ticker für Ligaportal: Events landen **automatisch** im Portal – kein K
 Ligaportal akzeptiert Schreibzugriffe nur mit Login-Session auf `ticker.ligaportal.at`.  
 Deshalb: Overlay **auf der Ligaportal-Seite** (per Bookmark, ohne Tampermonkey).
 
-1. Setup öffnen: **https://forsti37.github.io/tickerwrapper/setup.html**
-2. Bookmark **TW** am Handy anlegen (Anleitung auf der Seite)
-3. Bei Ligaportal einloggen → Live-Editor öffnen  
-   **Test ohne echtes Spiel:** https://ticker.ligaportal.at/liveGame/edit/1349470
-4. Bookmark **TW** tippen → Overlay → **In Ligaportal speichern**
+1. Setup: **https://forsti37.github.io/tickerwrapper/setup.html**
+2. **Empfohlen Android:** Firefox + Tampermonkey → Userscript installieren  
+   (Chrome blockiert `javascript:`-Lesezeichen → `about:blank#blocked`)
+3. In Firefox Ligaportal-Editor öffnen  
+   **Test:** https://ticker.ligaportal.at/liveGame/edit/1349470
+4. Button **TW** → Overlay → **In Ligaportal speichern**
 
 ## Planung (XI / Formation)
 
