@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#0b1f14" />
     <title>TickerWrapper – Auto-Ticker Setup</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700&family=Figtree:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=4" />
+    <link rel="stylesheet" href="./styles.css?v=5" />
     <style>
       .steps {
         counter-reset: step;
@@ -31,7 +30,15 @@
         color: var(--accent);
         font-weight: 700;
         margin-bottom: 6px;
-        letter-spacing: 0.04em;
+      }
+      .warn {
+        border: 1px solid rgba(251, 113, 133, 0.45);
+        background: rgba(251, 113, 133, 0.08);
+        border-radius: 14px;
+        padding: 12px 14px;
+        color: #fecdd3;
+        font-weight: 600;
+        line-height: 1.35;
       }
       .bookmark {
         display: block;
@@ -43,12 +50,10 @@
         padding: 16px;
         text-decoration: none;
         margin: 10px 0;
-        font-size: 1.05rem;
       }
-      code,
       .mono {
         font-family: ui-monospace, monospace;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         word-break: break-all;
       }
     </style>
@@ -56,79 +61,92 @@
   <body>
     <header class="app-header">
       <div class="eyebrow">TickerWrapper</div>
-      <h1>Automatisch tickern</h1>
-      <p>
-        Ligaportal speichert nur mit Login-Session. Deshalb läuft der Ticker
-        <strong>direkt auf der Ligaportal-Seite</strong> – Speichern = sofort im
-        Portal, ohne Kopieren, ohne Tampermonkey.
-      </p>
+      <h1>Auto-Ticker einrichten</h1>
     </header>
 
+    <p class="warn">
+      Die Meldung „Zuerst Ligaportal Live-Editor öffnen“ heißt: Du hast TW
+      <em>hier</em> oder auf einer anderen Seite getippt. TW muss auf der
+      <strong>Ligaportal-Editor-Seite</strong> laufen – nicht auf github.io.
+    </p>
+
     <section class="panel stack">
-      <h2>Einmalig: Bookmark am Handy</h2>
+      <h2>Einmalig: Lesezeichen anlegen</h2>
       <div class="steps">
         <div class="step">
-          <p>Diesen Link <strong>lange drücken</strong> → „Lesezeichen“ / „Bookmark“ (Name: <strong>TW</strong>).</p>
-          <a
-            class="bookmark"
-            id="bm"
-            href="javascript:void(0)"
-            >★ TW starten</a
-          >
+          <p>
+            Button unten <strong>lange drücken</strong> → „Lesezeichen“ /
+            „Bookmark“ → Name <strong>TW</strong>.
+          </p>
           <p class="muted">
-            iPhone: oft zuerst irgendeine Seite als Bookmark speichern, dann
-            Bookmark bearbeiten und die Adresse durch den Code unten ersetzen.
+            Nicht erwarten, dass der Button hier das Overlay öffnet – er ist nur
+            zum Speichern als Lesezeichen.
           </p>
-        </div>
-        <div class="step">
-          <p>In Safari/Chrome bei Ligaportal einloggen.</p>
-        </div>
-        <div class="step">
-          <p>
-            Live-Editor öffnen – zum Testen ohne echtes Spiel das
-            <strong>Demospiel</strong>:
+          <a class="bookmark" id="bm" href="#">★ Als Lesezeichen „TW“ speichern</a>
+          <p class="muted">
+            iPhone-Trick: Beliebige Seite als Lesezeichen speichern → Lesezeichen
+            bearbeiten → Name „TW“, Adresse durch den Code unten ersetzen.
           </p>
-          <p>
-            <a
-              href="https://ticker.ligaportal.at/liveGame/edit/1349470"
-              style="color: var(--accent); font-weight: 700"
-              >ticker.ligaportal.at/liveGame/edit/1349470</a
-            >
-          </p>
-          <p class="muted">Oder über Ligaportal-Menü „Demo“ / Demospiel.</p>
-        </div>
-        <div class="step">
-          <p>Lesezeichen <strong>TW</strong> antippen → Overlay erscheint.</p>
-          <p>Event tippen → <strong>In Ligaportal speichern</strong> → landet automatisch im Ticker.</p>
         </div>
       </div>
     </section>
 
     <section class="panel stack">
-      <h2>Bookmark-Adresse (zum Einfügen)</h2>
-      <p class="muted">Falls „★ TW starten“ nicht speicherbar ist – Text kopieren und als Bookmark-URL setzen:</p>
-      <textarea id="bmcode" readonly rows="6" class="mono"></textarea>
+      <h2>Jedes Mal tickern</h2>
+      <div class="steps">
+        <div class="step">
+          <p>Ligaportal im <strong>Browser</strong> öffnen und einloggen (nicht die Ligaportal-App).</p>
+        </div>
+        <div class="step">
+          <p>Editor öffnen. Test ohne echtes Spiel:</p>
+          <a
+            class="bookmark"
+            href="https://ticker.ligaportal.at/liveGame/edit/1349470"
+            style="background: #fff; color: #0b1f14"
+            >Demospiel-Editor öffnen</a
+          >
+          <p class="muted">Adresse muss so aussehen: …/liveGame/edit/1349470</p>
+        </div>
+        <div class="step">
+          <p>
+            Jetzt – <strong>während du auf dieser Ligaportal-Seite bist</strong> –
+            in der Bookmark-Leiste / Lesezeichen <strong>TW</strong> tippen.
+          </p>
+          <p>Overlay unten → Event → <strong>In Ligaportal speichern</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel stack">
+      <h2>Bookmark-Code (falls nötig)</h2>
+      <textarea id="bmcode" class="mono" readonly rows="7"></textarea>
       <button type="button" class="primary" id="copy">Code kopieren</button>
     </section>
 
-    <p class="muted">
-      <a href="./" style="color: var(--accent)">Zur Planungs-App</a> (XI/Formation offline) –
-      Tickern selbst immer über Ligaportal + TW-Bookmark.
-    </p>
+    <p id="status" class="status" aria-live="polite"></p>
 
     <script>
       (function () {
-        var src =
-          "https://forsti37.github.io/tickerwrapper/overlay.js?t=" + Date.now();
         var code =
-          "javascript:(function(){if(!/ligaportal\\.at/i.test(location.host)){alert('Zuerst Ligaportal Live-Editor öffnen');return;}var s=document.createElement('script');s.src='https://forsti37.github.io/tickerwrapper/overlay.js?t='+Date.now();document.documentElement.appendChild(s);})();";
-        document.getElementById("bm").setAttribute("href", code);
+          "javascript:(function(){var h=location.hostname||'';if(!/ligaportal\\.at$/i.test(h)){alert('TW nur im Ligaportal-Editor.\\n\\nJetzt: Demospiel öffnen:\\nhttps://ticker.ligaportal.at/liveGame/edit/1349470\\n\\nDann dort das Lesezeichen TW tippen.\\n\\n(Aktuell: '+h+')');return;}if(!/\\/liveGame\\/edit\\/\\d+/i.test(location.pathname||'')){alert('Du bist auf Ligaportal, aber nicht im Live-Editor.\\nÖffne ein Spiel unter …/liveGame/edit/…');return;}var s=document.createElement('script');s.src='https://forsti37.github.io/tickerwrapper/overlay.js?t='+Date.now();document.documentElement.appendChild(s);})();";
+
+        var bm = document.getElementById("bm");
+        bm.setAttribute("href", code);
+        bm.addEventListener("click", function (e) {
+          // Auf der Setup-Seite: nicht das Bookmarklet „echt“ ausführen – würde nur alerten
+          e.preventDefault();
+          var st = document.getElementById("status");
+          st.className = "status err";
+          st.textContent =
+            "Hier nicht tippen zum Starten. Lange drücken → Lesezeichen. Danach Demospiel öffnen und dort TW tippen.";
+        });
+
         document.getElementById("bmcode").value = code;
         document.getElementById("copy").onclick = async function () {
           try {
             await navigator.clipboard.writeText(code);
             this.textContent = "Kopiert";
-          } catch (e) {
+          } catch (err) {
             document.getElementById("bmcode").select();
           }
         };
