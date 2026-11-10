@@ -1199,6 +1199,10 @@
     $("#match-title").textContent = match.title || `${match.home.name || "Heim"} – ${match.away.name || "Gast"}`;
     $("#match-score").textContent = match.score || "0:0";
     renderBridgePill();
+    const demoHeaderBtn = $("#demo-load");
+    if (demoHeaderBtn) {
+      demoHeaderBtn.textContent = match.demo ? "Demo neu laden" : "Demo-Spiel laden";
+    }
   }
 
   function render() {
@@ -1213,6 +1217,17 @@
   }
 
   function init() {
+    const demoHeaderBtn = $("#demo-load");
+    if (demoHeaderBtn) {
+      demoHeaderBtn.addEventListener("click", () => {
+        loadDemoMatch();
+        setStatus("Demo geladen – jetzt XI oder Ticker tippen", "ok");
+        tab = "lineup";
+        render();
+        demoHeaderBtn.textContent = "Demo neu laden";
+      });
+    }
+
     $$(".tabs button").forEach((b) => {
       b.addEventListener("click", () => {
         tab = b.dataset.tab;
