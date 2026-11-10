@@ -1,0 +1,366 @@
+:root {
+  --bg0: #0b1f14;
+  --bg1: #122a1c;
+  --bg2: #1a3a28;
+  --line: rgba(190, 242, 200, 0.18);
+  --text: #f1f5f0;
+  --muted: #9cb5a6;
+  --accent: #b8f26e;
+  --accent-ink: #0b1f14;
+  --danger: #fb7185;
+  --card: rgba(255, 255, 255, 0.04);
+  --ok: #4ade80;
+  --font-display: "Archivo Narrow", "Arial Narrow", sans-serif;
+  --font-body: "Figtree", system-ui, sans-serif;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(184, 242, 110, 0.12), transparent 55%),
+    radial-gradient(900px 500px at 0% 100%, rgba(34, 197, 94, 0.16), transparent 50%),
+    linear-gradient(180deg, var(--bg0), #07140d 120%);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  padding: calc(12px + var(--safe-t)) 14px calc(88px + var(--safe-b));
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(2rem, 7vw, 2.6rem);
+  line-height: 0.95;
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+}
+
+p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.app-header {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.app-header .eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.scoreline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.scoreline strong {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+}
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px;
+  margin-bottom: 12px;
+  backdrop-filter: blur(8px);
+}
+
+.panel.hidden {
+  display: none;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.stack {
+  display: grid;
+  gap: 8px;
+}
+
+label.field {
+  display: grid;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 16px;
+}
+
+textarea {
+  min-height: 96px;
+  resize: vertical;
+  line-height: 1.35;
+}
+
+button {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 11px 14px;
+  font-weight: 700;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+button.primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: transparent;
+}
+
+button.ghost {
+  background: transparent;
+}
+
+button.danger {
+  color: var(--danger);
+  border-color: rgba(251, 113, 133, 0.35);
+}
+
+button.active,
+.chip.active {
+  background: var(--text);
+  color: var(--bg0);
+  border-color: transparent;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  border-radius: 999px;
+  padding: 8px 12px;
+  min-height: 40px;
+  font-size: 0.9rem;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(10px + var(--safe-b));
+  width: min(720px - 28px, calc(100% - 28px));
+  background: rgba(11, 31, 20, 0.92);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 6px;
+  backdrop-filter: blur(12px);
+  z-index: 40;
+}
+
+.tabs button {
+  border: 0;
+  background: transparent;
+  border-radius: 14px;
+}
+
+.tabs button.active {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.pitch {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 16px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px) 0 0 / 20% 100%,
+    linear-gradient(180deg, #1f7a3f, #166534 55%, #14532d);
+}
+
+.slot {
+  display: grid;
+  grid-template-columns: 64px 1fr 64px;
+  gap: 6px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0f172a;
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.slot select,
+.slot input {
+  background: #fff;
+  color: #0f172a;
+  border-color: #cbd5e1;
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+
+.bench-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.bench-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.18);
+  font-size: 0.95rem;
+}
+
+.player-list {
+  display: grid;
+  gap: 6px;
+  max-height: 42vh;
+  overflow: auto;
+}
+
+.player-list button {
+  justify-content: flex-start;
+  text-align: left;
+  border-radius: 14px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.status {
+  min-height: 1.2em;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.status.ok {
+  color: var(--ok);
+}
+
+.status.err {
+  color: var(--danger);
+}
+
+.bridge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+}
+
+.bridge-pill.on {
+  border-color: rgba(74, 222, 128, 0.5);
+  color: var(--ok);
+}
+
+.bridge-pill.off {
+  color: var(--muted);
+}
+
+.queue-item {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 4px;
+  margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.kv {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+@media (min-width: 860px) {
+  body {
+    padding-bottom: 28px;
+  }
+
+  .tabs {
+    position: sticky;
+    top: 12px;
+    bottom: auto;
+    transform: none;
+    left: auto;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+}
