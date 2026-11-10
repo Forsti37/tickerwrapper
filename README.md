@@ -1,33 +1,28 @@
 # TickerWrapper
 
-Handy-Ticker für Ligaportal: Events landen **automatisch** im Portal – kein Kopieren.
+**Ziel:** Eine Handy-App, in der du Ligaportal nutzt und Events **automatisch** speicherst – ohne Kopieren, ohne Tampermonkey, ohne Bookmarklet-Kram.
 
-## So funktioniert Auto-Tickern
+## Der Weg, der dazu passt
 
-Ligaportal akzeptiert Schreibzugriffe nur mit Login-Session auf `ticker.ligaportal.at`.  
-Deshalb: Overlay **auf der Ligaportal-Seite** (per Bookmark, ohne Tampermonkey).
+Ordner **`wrapper-android/`** – Android-WebView-Wrapper:
 
-1. Setup: **https://forsti37.github.io/tickerwrapper/setup.html**
-2. **Empfohlen Android:** Firefox + Tampermonkey → Userscript installieren  
-   (Chrome blockiert `javascript:`-Lesezeichen → `about:blank#blocked`)
-3. In Firefox Ligaportal-Editor öffnen  
-   **Test:** https://ticker.ligaportal.at/liveGame/edit/1349470
-4. Button **TW** → Overlay → **In Ligaportal speichern**
+1. App öffnen → bei Ligaportal einloggen (Session bleibt in der App)
+2. Live-Editor öffnen (Button **Demo** = Testspiel ohne echtes Match)
+3. Overlay erscheint → **In Ligaportal speichern** = direkt im Ticker
 
-## Planung (XI / Formation)
+Bauen: Android Studio → `wrapper-android/` öffnen → Run. Details in [`wrapper-android/README.md`](wrapper-android/README.md).
 
-https://forsti37.github.io/tickerwrapper/  
-Offline-Planung / Demo-Aufstellung – Tickern selbst immer über Ligaportal + TW.
+## Warum nicht „nur GitHub Pages“?
 
-## Dateien
+Eine Website auf `github.io` darf die Ligaportal-Login-Session nicht mitbenutzen. Deshalb können Bookmarklets/Firefox-Addons nur Notlösungen sein – und genau das wolltest du nicht.
 
-| Datei | Zweck |
-|-------|--------|
-| `docs/overlay.js` | Overlay, postet direkt nach Ligaportal |
-| `docs/setup.html` | Bookmark-Installation |
-| `docs/index.html` | Planungs-PWA |
-| `userscript/…` | Optional Desktop (Tampermonkey) |
+## Rest im Repo
 
-## Repo
+| Pfad | Rolle |
+|------|--------|
+| `wrapper-android/` | **Produkt:** Auto-Ticker-App |
+| `docs/overlay.js` | UI, die in Ligaportal postet (von der App injiziert) |
+| `docs/` | optionale Planungs-PWA / Demo-XI |
+| `userscript/` | Legacy / Desktop |
 
-https://github.com/Forsti37/tickerwrapper · Pages aus `/docs`
+Repo: https://github.com/Forsti37/tickerwrapper

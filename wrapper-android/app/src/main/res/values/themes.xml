@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.TickerWrapper" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">#B8F26E</item>
+        <item name="colorOnPrimary">#0B1F14</item>
+        <item name="android:statusBarColor">#0B1F14</item>
+        <item name="android:navigationBarColor">#0B1F14</item>
+        <item name="android:windowBackground">#0B1F14</item>
+    </style>
+</resources>

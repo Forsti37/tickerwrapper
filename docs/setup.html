@@ -3,179 +3,43 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#0b1f14" />
-    <title>TickerWrapper – Auto-Ticker Setup</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@700&family=Figtree:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
+    <title>TickerWrapper</title>
     <link rel="stylesheet" href="./styles.css?v=5" />
-    <style>
-      .steps {
-        counter-reset: step;
-        display: grid;
-        gap: 12px;
-      }
-      .step {
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 14px;
-        background: var(--card);
-      }
-      .step::before {
-        counter-increment: step;
-        content: "Schritt " counter(step);
-        display: block;
-        font-family: var(--font-display);
-        color: var(--accent);
-        font-weight: 700;
-        margin-bottom: 6px;
-      }
-      .warn {
-        border: 1px solid rgba(251, 113, 133, 0.45);
-        background: rgba(251, 113, 133, 0.08);
-        border-radius: 14px;
-        padding: 12px 14px;
-        color: #fecdd3;
-        font-weight: 600;
-        line-height: 1.35;
-      }
-      .okbox {
-        border: 1px solid rgba(184, 242, 110, 0.35);
-        background: rgba(184, 242, 110, 0.08);
-        border-radius: 14px;
-        padding: 12px 14px;
-        line-height: 1.4;
-      }
-      .mono {
-        font-family: ui-monospace, monospace;
-        font-size: 0.72rem;
-        word-break: break-all;
-      }
-      a.big {
-        display: block;
-        text-align: center;
-        background: var(--accent);
-        color: var(--accent-ink);
-        font-weight: 800;
-        border-radius: 999px;
-        padding: 16px;
-        text-decoration: none;
-        margin: 8px 0;
-      }
-      a.big.secondary {
-        background: rgba(255, 255, 255, 0.1);
-        color: var(--text);
-        border: 1px solid var(--line);
-      }
-    </style>
   </head>
   <body>
     <header class="app-header">
       <div class="eyebrow">TickerWrapper</div>
-      <h1>Auto-Ticker am Handy</h1>
-      <p class="muted">
-        Chrome blockiert Lesezeichen mit <code>javascript:</code> (darum
-        <code>about:blank#blocked</code>). Deshalb nicht „Link lange drücken“.
+      <h1>Der echte Wrapper</h1>
+      <p>
+        Bookmarklets / Firefox+Tampermonkey waren ein Notnagel – und
+        <strong>nicht</strong> das Ziel. Automatisches Tickern braucht die
+        Ligaportal-Session in einer eigenen App.
       </p>
     </header>
 
-    <p class="warn">
-      Empfohlen unter Android: <strong>Firefox</strong> + Tampermonkey – einmal
-      installieren, danach öffnet sich TW automatisch im Ligaportal-Editor.
-    </p>
-
     <section class="panel stack">
-      <h2>Variante A – Firefox (einfach)</h2>
-      <div class="steps">
-        <div class="step">
-          <p>Firefox für Android installieren (Play Store).</p>
-        </div>
-        <div class="step">
-          <p>
-            In Firefox: Add-ons → nach <strong>Tampermonkey</strong> suchen →
-            installieren.
-          </p>
-        </div>
-        <div class="step">
-          <p>Dieses Userscript installieren (in Firefox tippen):</p>
-          <a
-            class="big"
-            href="https://forsti37.github.io/tickerwrapper/tickerwrapper-overlay.user.js"
-            >Userscript installieren</a
-          >
-          <p class="muted">Tampermonkey fragt „Installieren?“ → bestätigen.</p>
-        </div>
-        <div class="step">
-          <p>In Firefox Ligaportal öffnen, einloggen, Demospiel:</p>
-          <a class="big secondary" href="https://ticker.ligaportal.at/liveGame/edit/1349470"
-            >Demospiel-Editor öffnen</a
-          >
-          <p>Unten rechts erscheint <strong>TW</strong> → Overlay → speichern = direkt im Portal.</p>
-        </div>
-      </div>
+      <h2>Android-App (WebView-Wrapper)</h2>
+      <p>
+        Im Repo: Ordner <code>wrapper-android/</code> – Ligaportal in der App,
+        Overlay drauf, Speichern = direkt im Portal.
+      </p>
+      <p class="muted">
+        Android Studio → Ordner öffnen → Run aufs Handy. Anleitung:
+        <code>wrapper-android/README.md</code>
+      </p>
+      <a
+        href="https://github.com/Forsti37/tickerwrapper/tree/main/wrapper-android"
+        style="color: var(--accent); font-weight: 700"
+        >wrapper-android auf GitHub</a
+      >
     </section>
 
     <section class="panel stack">
-      <h2>Variante B – Chrome (umständlich)</h2>
-      <div class="okbox">
-        Lange drücken geht in Chrome <strong>nicht</strong>. Du musst ein normales
-        Lesezeichen anlegen und die <strong>Adresse per Hand ersetzen</strong>.
-      </div>
-      <div class="steps">
-        <div class="step">
-          <p>Unten <strong>Code kopieren</strong> tippen.</p>
-          <button type="button" class="primary" id="copy">Code kopieren</button>
-        </div>
-        <div class="step">
-          <p>
-            Beliebige Seite als Lesezeichen speichern (Stern / Menü →
-            Lesezeichen).
-          </p>
-        </div>
-        <div class="step">
-          <p>
-            Chrome-Menü (⋮) → <strong>Lesezeichen</strong> → Lesezeichen
-            antippen / bearbeiten (Stift) → Feld <strong>URL / Adresse</strong>
-            komplett löschen → kopierten Code <strong>einfügen</strong> → Name
-            <strong>TW</strong> → Speichern.
-          </p>
-        </div>
-        <div class="step">
-          <p>
-            Ligaportal-Editor öffnen (Demospiel-Link oben), dann Lesezeichen
-            <strong>TW</strong> aus dem Lesezeichen-Menü öffnen.
-          </p>
-        </div>
-      </div>
-      <textarea id="bmcode" class="mono" readonly rows="8"></textarea>
+      <h2>Was die Pages-App noch ist</h2>
+      <p class="muted">
+        Nur Planung / Demo-XI offline.
+        <a href="./" style="color: var(--accent)">Zur Planungs-UI</a>
+      </p>
     </section>
-
-    <p class="muted">
-      Die Ligaportal-<strong>App</strong> kann das nicht – nur Browser (Firefox
-      empfohlen).
-    </p>
-    <p id="status" class="status" aria-live="polite"></p>
-
-    <script>
-      (function () {
-        var code =
-          "javascript:(function(){var h=location.hostname||'';if(!/ligaportal\\.at$/i.test(h)){alert('TW nur im Ligaportal-Editor.\\nZuerst:\\nhttps://ticker.ligaportal.at/liveGame/edit/1349470\\nDann Lesezeichen TW öffnen.');return;}if(!/\\/liveGame\\/edit\\/\\d+/i.test(location.pathname||'')){alert('Nicht im Live-Editor. Öffne …/liveGame/edit/…');return;}var s=document.createElement('script');s.src='https://forsti37.github.io/tickerwrapper/overlay.js?t='+Date.now();document.documentElement.appendChild(s);})();";
-        document.getElementById("bmcode").value = code;
-        document.getElementById("copy").onclick = async function () {
-          var st = document.getElementById("status");
-          try {
-            await navigator.clipboard.writeText(code);
-            st.className = "status ok";
-            st.textContent = "Code kopiert – jetzt Lesezeichen-URL damit ersetzen.";
-            this.textContent = "Kopiert ✓";
-          } catch (e) {
-            document.getElementById("bmcode").select();
-            st.className = "status err";
-            st.textContent = "Bitte Code markieren und selbst kopieren.";
-          }
-        };
-      })();
-    </script>
   </body>
 </html>
